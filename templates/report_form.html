@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}{% if is_edit %}编辑周报{% else %}写周报{% endif %}{% endblock %}
+
+{% block content %}
+<div class="form-page">
+    <div class="form-card">
+        <div class="form-card-header">
+            <h1>
+                {% if is_edit %}
+                    ✏️ 编辑周报
+                {% else %}
+                    ✍️ 写周报
+                {% endif %}
+            </h1>
+            <p>
+                {% if is_edit %}
+                    修改你的周报内容~
+                {% else %}
+                    记录这周的工作，让蟹老板看看你的努力！
+                {% endif %}
+            </p>
+        </div>
+
+        <form method="POST" class="report-form">
+            <div class="form-row">
+                <div class="form-group form-group-half">
+                    <label for="week_number">📅 第几周</label>
+                    <select id="week_number" name="week_number" required>
+                        <option value="">选择周数</option>
+                        {% for w in range(1, 53) %}
+                        <option value="{{ w }}"
+                            {% if is_edit and report.week_number == w %}selected
+                            {% elif not is_edit and today.isocalendar()[1] == w %}selected
+                            {% endif %}>
+                            第 {{ w }} 周
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group form-group-half">
+                    <label for="year">📆 年份</label>
+                    <select id="year" name="year" required>
+                        {% for y in range(today.year - 1, today.year + 2) %}
+                        <option value="{{ y }}"
+                            {% if is_edit and report.year == y %}selected
+                            {% elif not is_edit and today.year == y %}selected
+                            {% endif %}>
+                            {{ y }} 年
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="title">📝 周报标题</label>
+                <input type="text" id="title" name="title"
+                       placeholder="给这周的周报取个标题吧~"
+                       value="{{ report.title if is_edit else '' }}"
+                       maxlength="100" required>
+            </div>
+
+            <div class="form-group">
+                <label for="content">📄 周报内容</label>
+                <textarea id="content" name="content" rows="15"
+                          placeholder="这周做了什么？遇到了什么问题？下周计划是什么？..."
+                          required>{{ report.content if is_edit else '' }}</textarea>
+                <small class="form-hint">
+                    💡 提示：可以写这周完成的任务、遇到的问题、下周计划等
+                </small>
+            </div>
+
+            <div class="form-actions">
+                <a href="{% if is_edit %}{{ url_for('view_report', report_id=report.id) }}{% else %}{{ url_for('index') }}{% endif %}"
+                   class="btn btn-secondary">
+                    ↩️ 取消
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    {% if is_edit %}
+                        💾 保存修改
+                    {% else %}
+                        🚀 发布周报
+                    {% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

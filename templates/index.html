@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}首页 - 所有周报{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">
+        <span class="title-icon">📰</span>
+        比奇堡周报列表
+        <span class="title-icon">📰</span>
+    </h1>
+    <p class="page-subtitle">🌊 看看比奇堡的居民们这周都做了什么~</p>
+</div>
+
+{% if reports %}
+    <div class="report-list">
+        {% for report in reports %}
+        <article class="report-card">
+            <div class="report-card-header">
+                <div class="report-author">
+                    <span class="author-avatar">{{ report.avatar_emoji }}</span>
+                    <a href="{{ url_for('user_profile', username=report.username) }}" class="author-name">
+                        {{ report.username }}
+                    </a>
+                </div>
+                <div class="report-week-badge">
+                    📅 第 {{ report.week_number }} 周 · {{ report.year }}
+                </div>
+            </div>
+
+            <h2 class="report-card-title">
+                <a href="{{ url_for('view_report', report_id=report.id) }}">
+                    {{ report.title }}
+                </a>
+            </h2>
+
+            <p class="report-card-preview">
+                {{ report.content[:150] }}{% if report.content|length > 150 %}...{% endif %}
+            </p>
+
+            <div class="report-card-footer">
+                <div class="report-stats">
+                    <span class="stat" title="浏览量">👀 {{ report.view_count }}</span>
+                    <span class="stat" title="点赞数">❤️ {{ report.like_count }}</span>
+                    <span class="stat" title="评论数">💬 {{ report.comment_count }}</span>
+                </div>
+                <div class="report-time">
+                    🕐 {{ report.created_at[:10] }}
+                </div>
+                <a href="{{ url_for('view_report', report_id=report.id) }}" class="read-more-btn">
+                    阅读全文 →
+                </a>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+
+    <!-- 📄 分页导航 -->
+    {% if total_pages > 1 %}
+    <div class="pagination">
+        {% if page > 1 %}
+            <a href="{{ url_for('index', page=page-1) }}" class="page-btn">← 上一页</a>
+        {% else %}
+            <span class="page-btn page-btn-disabled">← 上一页</span>
+        {% endif %}
+
+        <span class="page-info">第 {{ page }} / {{ total_pages }} 页</span>
+
+        {% if page < total_pages %}
+            <a href="{{ url_for('index', page=page+1) }}" class="page-btn">下一页 →</a>
+        {% else %}
+            <span class="page-btn page-btn-disabled">下一页 →</span>
+        {% endif %}
+    </div>
+    {% endif %}
+
+{% else %}
+    <div class="empty-state">
+        <div class="empty-icon">🦀</div>
+        <h2>还没有周报呢！</h2>
+        <p>蟹老板说：「快写周报！不然扣你蟹黄堡！」</p>
+        {% if session.user_id %}
+            <a href="{{ url_for('create_report') }}" class="btn btn-primary btn-lg">
+                ✍️ 写第一篇周报
+            </a>
+        {% else %}
+            <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">
+                🧽 注册并写第一篇周报
+            </a>
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock %}

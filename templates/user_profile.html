@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}{{ user.username }} 的主页{% endblock %}
+
+{% block content %}
+<div class="profile-page">
+    <!-- 👤 用户信息卡片 -->
+    <div class="profile-header-card">
+        <div class="profile-avatar-xl">{{ user.avatar_emoji }}</div>
+        <h1 class="profile-username">{{ user.username }}</h1>
+        <p class="profile-join-date">🕐 加入于 {{ user.created_at[:10] }}</p>
+
+        <div class="profile-stats">
+            <div class="profile-stat-item">
+                <span class="profile-stat-num">{{ stats.total_reports }}</span>
+                <span class="profile-stat-label">📝 周报数</span>
+            </div>
+            <div class="profile-stat-item">
+                <span class="profile-stat-num">{{ stats.total_views }}</span>
+                <span class="profile-stat-label">👀 总浏览量</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 📝 用户周报列表 -->
+    <div class="profile-reports">
+        <h2 class="profile-section-title">
+            {% if reports %}
+                📝 {{ user.username }} 的周报 ({{ reports|length }} 篇)
+            {% else %}
+                🫧 还没有写过周报
+            {% endif %}
+        </h2>
+
+        {% if reports %}
+        <div class="report-list">
+            {% for report in reports %}
+            <article class="report-card">
+                <div class="report-card-header">
+                    <div class="report-week-badge">
+                        📅 第 {{ report.week_number }} 周 · {{ report.year }}
+                    </div>
+                </div>
+
+                <h2 class="report-card-title">
+                    <a href="{{ url_for('view_report', report_id=report.id) }}">
+                        {{ report.title }}
+                    </a>
+                </h2>
+
+                <p class="report-card-preview">
+                    {{ report.content[:150] }}{% if report.content|length > 150 %}...{% endif %}
+                </p>
+
+                <div class="report-card-footer">
+                    <div class="report-stats">
+                        <span class="stat">👀 {{ report.view_count }}</span>
+                        <span class="stat">❤️ {{ report.like_count }}</span>
+                        <span class="stat">💬 {{ report.comment_count }}</span>
+                    </div>
+                    <div class="report-time">
+                        🕐 {{ report.created_at[:10] }}
+                    </div>
+                    <a href="{{ url_for('view_report', report_id=report.id) }}" class="read-more-btn">
+                        阅读全文 →
+                    </a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">🫧</div>
+            <p>{{ user.username }} 还在海底抓水母，还没来得及写周报~</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

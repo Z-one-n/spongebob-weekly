@@ -1,0 +1,23 @@
+# 虚拟环境
+venv/
+env/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# 数据库文件（包含用户数据，不应提交到 Git）
+database.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 环境变量
+.env

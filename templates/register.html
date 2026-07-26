@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}注册{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-icon">🧽</div>
+            <h1>加入比奇堡！</h1>
+            <p>注册成为比奇堡居民，开始写周报~</p>
+        </div>
+
+        <form method="POST" class="auth-form">
+            <div class="form-group">
+                <label for="username">👤 用户名</label>
+                <input type="text" id="username" name="username"
+                       placeholder="2-20 个字符，取个酷炫的名字吧~"
+                       minlength="2" maxlength="20"
+                       required autocomplete="username">
+            </div>
+
+            <div class="form-group">
+                <label for="avatar_emoji">🎭 选择你的头像</label>
+                <div class="emoji-selector" id="emojiSelector">
+                    {% for emoji in ['🧽', '⭐', '🦀', '🐿️', '🦑', '🐳', '🐌', '🦐', '🐡', '🐙', '🫧', '🍍', '🍔', '🌈', '🎸', '🎨'] %}
+                    <label class="emoji-option">
+                        <input type="radio" name="avatar_emoji" value="{{ emoji }}"
+                               {% if loop.first %}checked{% endif %}>
+                        <span class="emoji-display">{{ emoji }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">🔒 密码</label>
+                <input type="password" id="password" name="password"
+                       placeholder="至少 6 个字符"
+                       minlength="6" required autocomplete="new-password">
+            </div>
+
+            <div class="form-group">
+                <label for="confirm_password">🔒 确认密码</label>
+                <input type="password" id="confirm_password" name="confirm_password"
+                       placeholder="再输入一次密码"
+                       minlength="6" required autocomplete="new-password">
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">
+                🎉 注册
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            <p>已经有账号了？<a href="{{ url_for('login') }}">🔑 立即登录</a></p>
+        </div>
+    </div>
+
+    <!-- 🎨 装饰角色 -->
+    <div class="auth-decoration">
+        <div class="deco-character">🧽</div>
+        <div class="deco-character">⭐</div>
+        <div class="deco-character">🦀</div>
+    </div>
+</div>
