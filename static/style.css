@@ -12,11 +12,11 @@
     --yellow-dark:       #C4B890;
     --yellow-spongebob:  #FFF8D0;
 
-    /* 深海蓝 — 图片下方海洋区域 */
-    --ocean-deep:        #0D5197;
-    --ocean-primary:     #079DCA;
-    --ocean-light:       #5CC8E8;
-    --ocean-surface:     #B3EAF8;
+    /* 深海蓝/青 — 从纸纹背景图提取 */
+    --ocean-deep:        #071335;
+    --ocean-primary:     #2B88A1;
+    --ocean-light:       #7EC8D8;
+    --ocean-surface:     #C8D5F5;
 
     /* 沙滩色 — 与奶油黄协调 */
     --sand-light:        #FDF8E8;
@@ -705,13 +705,18 @@ a:hover {
 }
 
 .form-card {
-    background: rgba(255, 255, 255, 0.88);
-    backdrop-filter: blur(12px);
+    /* 🖼️ 纸纹背景 + 半透明白色遮罩 */
+    background-image: url('/static/paper-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    box-shadow:
+        inset 0 0 0 2000px rgba(255, 255, 255, 0.82),
+        var(--shadow-lg);
     border-radius: var(--radius-xl);
     padding: var(--space-2xl);
-    box-shadow: var(--shadow-lg);
     width: 100%;
     max-width: 750px;
+    position: relative;
 }
 
 .form-card-header {
@@ -941,7 +946,16 @@ a:hover {
     font-size: 1.05rem;
     line-height: 2;
     color: var(--text-primary);
-    padding: var(--space-lg) 0;
+    padding: var(--space-xl);
+    /* 🖼️ 纸纹背景 */
+    background-image: url('/static/paper-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: var(--radius-lg);
+    position: relative;
+    /* 白色半透明遮罩保证文字可读 */
+    box-shadow: inset 0 0 0 2000px rgba(255, 255, 255, 0.75);
 }
 
 /* 互动区域 */
@@ -1176,7 +1190,7 @@ a:hover {
 
 /* ========== 🦶 页脚 ========== */
 .footer {
-    background: linear-gradient(135deg, #0A3D70, var(--ocean-deep));
+    background: linear-gradient(135deg, #051025, var(--ocean-deep));
     color: var(--white);
     padding: var(--space-2xl) var(--space-lg);
     text-align: center;
