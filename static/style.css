@@ -705,33 +705,44 @@ a:hover {
 }
 
 .form-card {
-    /* 🖼️ 纸纹背景 + 半透明白色遮罩 */
+    /* 🖼️ 纸纹背景铺满，仅留细白边框 */
     background-image: url('/static/paper-bg.jpg');
     background-size: cover;
     background-position: center;
-    box-shadow:
-        inset 0 0 0 2000px rgba(255, 255, 255, 0.82),
-        var(--shadow-lg);
+    border: 4px solid rgba(255, 255, 255, 0.9);
     border-radius: var(--radius-xl);
     padding: var(--space-2xl);
     width: 100%;
     max-width: 750px;
     position: relative;
+    box-shadow: var(--shadow-lg);
+}
+/* 极浅暗色叠加保证文字可读 */
+.form-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.20);
+    border-radius: calc(var(--radius-xl) - 3px);
+    pointer-events: none;
 }
 
 .form-card-header {
     text-align: center;
     margin-bottom: var(--space-xl);
+    position: relative;
+    z-index: 2;
 }
 
 .form-card-header h1 {
     font-size: 1.8rem;
-    color: var(--text-primary);
+    color: #FFFFFF;
     margin-bottom: var(--space-xs);
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 .form-card-header p {
-    color: var(--text-secondary);
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .form-group {
@@ -743,28 +754,37 @@ a:hover {
 
 .form-group label {
     font-weight: 600;
-    color: var(--text-primary);
+    color: rgba(255, 255, 255, 0.9);
+    position: relative;
+    z-index: 2;
 }
 
 .form-group input,
 .form-group textarea,
 .form-group select {
     padding: 0.75rem 1rem;
-    border: 2px solid #E0E0E0;
+    border: 2px solid rgba(255, 255, 255, 0.3);
     border-radius: var(--radius-md);
     font-family: inherit;
     font-size: 1rem;
     transition: all 0.2s;
-    background: var(--white);
-    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.15);
+    color: #FFFFFF;
+    position: relative;
+    z-index: 2;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: rgba(255, 255, 255, 0.45);
 }
 
 .form-group input:focus,
 .form-group textarea:focus,
 .form-group select:focus {
     outline: none;
-    border-color: var(--yellow-dark);
-    box-shadow: 0 0 0 3px rgba(247, 220, 111, 0.3);
+    border-color: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.15);
 }
 
 .form-group textarea {
@@ -773,12 +793,14 @@ a:hover {
 }
 
 .form-hint {
-    color: var(--text-muted);
+    color: rgba(255, 255, 255, 0.5);
     font-size: 0.85rem;
+    position: relative;
+    z-index: 2;
 }
 
 .char-count {
-    color: var(--text-muted);
+    color: rgba(255, 255, 255, 0.5);
     font-size: 0.8rem;
     text-align: right;
 }
@@ -798,7 +820,24 @@ a:hover {
     gap: var(--space-md);
     margin-top: var(--space-xl);
     padding-top: var(--space-lg);
-    border-top: 1px dashed #E0E0E0;
+    border-top: 1px dashed rgba(255, 255, 255, 0.25);
+    position: relative;
+    z-index: 2;
+}
+
+/* 表单页背景也改为更暗，与纸纹卡片协调 */
+.form-page {
+    display: flex;
+    justify-content: center;
+}
+
+/* select 下拉框底色 */
+.form-group select {
+    color: #FFFFFF;
+}
+.form-group select option {
+    background: #1A3A50;
+    color: #FFFFFF;
 }
 
 
@@ -869,18 +908,34 @@ a:hover {
 
 /* ========== 📄 周报详情页 ========== */
 .report-detail {
-    background: rgba(255, 255, 255, 0.88);
-    backdrop-filter: blur(12px);
+    /* 🖼️ 纸纹背景铺满整个详情卡片 */
+    background-image: url('/static/paper-bg.jpg');
+    background-size: cover;
+    background-position: center;
     border-radius: var(--radius-xl);
     padding: var(--space-2xl);
     box-shadow: var(--shadow-md);
     margin-bottom: var(--space-2xl);
+    /* 细白边框 */
+    border: 4px solid rgba(255, 255, 255, 0.9);
+    /* 极浅暗色叠加保证文字可读 */
+    position: relative;
+}
+.report-detail::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.18);
+    border-radius: var(--radius-xl);
+    pointer-events: none;
 }
 
 .report-detail-header {
-    border-bottom: 2px dashed #E0E0E0;
+    border-bottom: 2px dashed rgba(255, 255, 255, 0.35);
     padding-bottom: var(--space-lg);
     margin-bottom: var(--space-xl);
+    position: relative;
+    z-index: 1;
 }
 
 .report-meta-top {
@@ -896,7 +951,9 @@ a:hover {
     display: flex;
     align-items: center;
     gap: var(--space-sm);
-    color: var(--text-primary) !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    position: relative;
+    z-index: 1;
 }
 
 .author-avatar-lg {
@@ -906,56 +963,83 @@ a:hover {
 .author-name-lg {
     font-weight: 700;
     font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.9);
 }
 
 .report-week-badge-lg {
-    background: var(--ocean-surface);
-    color: var(--ocean-deep);
+    background: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.9);
     padding: 0.4rem 1rem;
     border-radius: var(--radius-full);
     font-weight: 700;
     font-size: 0.95rem;
+    position: relative;
+    z-index: 1;
+    backdrop-filter: blur(4px);
 }
 
 .report-detail-title {
     font-size: 2rem;
-    color: var(--text-primary);
+    color: #FFFFFF;
     margin-bottom: var(--space-md);
     line-height: 1.4;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 .report-meta-bottom {
     display: flex;
     gap: var(--space-lg);
     flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
 }
 
 .meta-item {
     font-size: 0.9rem;
-    color: var(--text-muted);
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .author-actions {
     margin-top: var(--space-md);
     display: flex;
     gap: var(--space-sm);
+    position: relative;
+    z-index: 1;
+}
+
+/* 交互统计徽章(深色背景适配) */
+.interaction-stats .stat-badge {
+    background: rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.85);
+}
+
+/* 点赞按钮(深色背景适配) */
+.report-interactions .like-btn {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.25);
+    color: rgba(255, 255, 255, 0.9);
+}
+.report-interactions .like-btn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+.report-interactions .like-btn.liked {
+    background: rgba(255, 80, 120, 0.3);
+    border-color: rgba(255, 80, 120, 0.5);
 }
 
 /* 周报正文 */
 .report-detail-content {
     font-size: 1.05rem;
     line-height: 2;
-    color: var(--text-primary);
-    padding: var(--space-xl);
-    /* 🖼️ 纸纹背景 */
-    background-image: url('/static/paper-bg.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    border-radius: var(--radius-lg);
+    color: rgba(255, 255, 255, 0.92);
+    padding: var(--space-lg) var(--space-sm);
     position: relative;
-    /* 白色半透明遮罩保证文字可读 */
-    box-shadow: inset 0 0 0 2000px rgba(255, 255, 255, 0.75);
+    z-index: 1;
+    /* 背景继承父级纸纹，此处不加额外背景 */
+    background: none;
 }
 
 /* 互动区域 */
@@ -964,10 +1048,12 @@ a:hover {
     align-items: center;
     justify-content: space-between;
     padding-top: var(--space-lg);
-    border-top: 2px dashed #E0E0E0;
+    border-top: 2px dashed rgba(255, 255, 255, 0.3);
     margin-top: var(--space-lg);
     flex-wrap: wrap;
     gap: var(--space-md);
+    position: relative;
+    z-index: 1;
 }
 
 .like-btn {
