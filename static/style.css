@@ -722,9 +722,10 @@ a:hover {
     content: '';
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.20);
+    background: rgba(0, 0, 0, 0.38);
     border-radius: calc(var(--radius-xl) - 3px);
     pointer-events: none;
+    backdrop-filter: blur(2px);
 }
 
 .form-card-header {
@@ -925,9 +926,10 @@ a:hover {
     content: '';
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.18);
+    background: rgba(0, 0, 0, 0.35);
     border-radius: var(--radius-xl);
     pointer-events: none;
+    backdrop-filter: blur(2px);
 }
 
 .report-detail-header {
