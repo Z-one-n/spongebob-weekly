@@ -1116,18 +1116,34 @@ a:hover {
 
 /* ========== 💬 评论区 ========== */
 .comments-section {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(8px);
+    /* 🖼️ 评论区纸纹背景 */
+    background-image: url('/static/comment-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    border: 4px solid rgba(255, 255, 255, 0.9);
     border-radius: var(--radius-xl);
     padding: var(--space-2xl);
     box-shadow: var(--shadow-md);
+    position: relative;
+}
+.comments-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.38);
+    border-radius: var(--radius-xl);
+    pointer-events: none;
+    backdrop-filter: blur(2px);
 }
 
 .comments-title {
     font-size: 1.4rem;
     margin-bottom: var(--space-xl);
     padding-bottom: var(--space-md);
-    border-bottom: 2px dashed #E0E0E0;
+    border-bottom: 2px dashed rgba(255, 255, 255, 0.3);
+    color: #FFFFFF;
+    position: relative;
+    z-index: 1;
 }
 
 .comments-list {
@@ -1139,9 +1155,11 @@ a:hover {
 
 .comment-card {
     padding: var(--space-lg);
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.12);
     border-radius: var(--radius-lg);
-    border-left: 4px solid var(--ocean-primary);
+    border-left: 4px solid rgba(255, 255, 255, 0.5);
+    position: relative;
+    z-index: 1;
 }
 
 .comment-header {
@@ -1155,7 +1173,7 @@ a:hover {
     display: flex;
     align-items: center;
     gap: var(--space-sm);
-    color: var(--text-primary) !important;
+    color: rgba(255, 255, 255, 0.9) !important;
     font-weight: 600;
 }
 
@@ -1165,23 +1183,29 @@ a:hover {
 
 .comment-time {
     font-size: 0.8rem;
-    color: var(--text-muted);
+    color: rgba(255, 255, 255, 0.55);
 }
 
 .comment-content {
-    color: var(--text-primary);
+    color: rgba(255, 255, 255, 0.88);
     line-height: 1.8;
 }
 
 .empty-comments {
     text-align: center;
     padding: var(--space-xl);
-    color: var(--text-muted);
+    color: rgba(255, 255, 255, 0.6);
+    position: relative;
+    z-index: 1;
 }
 
+.comment-form-container {
+    position: relative;
+    z-index: 1;
+}
 .comment-form-container h3 {
     margin-bottom: var(--space-md);
-    color: var(--text-primary);
+    color: #FFFFFF;
 }
 
 .comment-form {
@@ -1190,15 +1214,38 @@ a:hover {
     gap: var(--space-md);
 }
 
+/* 评论输入框适配深色背景 */
+.comment-form textarea {
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: #FFFFFF;
+    border-radius: var(--radius-md);
+    padding: 0.75rem 1rem;
+    font-family: inherit;
+    font-size: 1rem;
+}
+.comment-form textarea::placeholder {
+    color: rgba(255, 255, 255, 0.45);
+}
+.comment-form textarea:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.15);
+}
+
 .comment-login-hint {
     text-align: center;
     padding: var(--space-lg);
-    background: var(--bg-ocean);
+    background: rgba(255, 255, 255, 0.12);
     border-radius: var(--radius-lg);
+    color: rgba(255, 255, 255, 0.8);
+    position: relative;
+    z-index: 1;
 }
 
 .comment-login-hint a {
     font-weight: 700;
+    color: rgba(255, 255, 255, 0.9);
 }
 
 
