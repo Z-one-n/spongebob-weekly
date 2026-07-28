@@ -101,6 +101,38 @@ with app.app_context():
 
 
 # ============================================================
+# 🧰 模板辅助函数
+# ============================================================
+
+@app.context_processor
+def utility_processor():
+    """为所有模板提供辅助函数"""
+    def make_tab_url(tab_name):
+        """切换标签页时保留搜索和筛选参数"""
+        args = {}
+        for key in ['search', 'year', 'week', 'user']:
+            val = request.args.get(key, '').strip()
+            if val:
+                args[key] = val
+        args['tab'] = tab_name
+        from flask import url_for as _url_for
+        return _url_for('index', **args)
+
+    def make_page_url(page_num):
+        """分页链接保留所有参数"""
+        args = {}
+        for key in ['tab', 'search', 'year', 'week', 'user']:
+            val = request.args.get(key, '').strip()
+            if val:
+                args[key] = val
+        args['page'] = page_num
+        from flask import url_for as _url_for
+        return _url_for('index', **args)
+
+    return dict(make_tab_url=make_tab_url, make_page_url=make_page_url)
+
+
+# ============================================================
 # 🔐 用户认证装饰器
 # ============================================================
 
@@ -116,23 +148,74 @@ def login_required(f):
 
 
 # ============================================================
-# 🏠 首页 - 浏览所有周报
+# 🏠 首页 - 浏览所有周报（支持搜索/筛选/标签页）
 # ============================================================
 
 @app.route('/')
 def index():
-    """首页：展示所有周报，支持分页"""
+    """首页：展示周报，支持分页、搜索、筛选、标签页切换"""
     page = request.args.get('page', 1, type=int)
-    per_page = 10  # 每页显示 10 篇周报
-    offset = (page - 1) * per_page
+    tab = request.args.get('tab', 'latest')  # latest | mine | popular
+    search = request.args.get('search', '').strip()
+    filter_year = request.args.get('year', '', type=str)
+    filter_week = request.args.get('week', '', type=str)
+    filter_user = request.args.get('user', '').strip()
 
+    per_page = 10
+    offset = (page - 1) * per_page
     db = get_db()
 
-    # 查询周报总数
-    total = db.execute("SELECT COUNT(*) FROM reports").fetchone()[0]
+    # 构建动态查询条件
+    conditions = []
+    params = []
 
-    # 查询当前页的周报，包含作者信息和点赞数、评论数
-    reports = db.execute("""
+    if search:
+        conditions.append("(r.title LIKE ? OR r.content LIKE ?)")
+        params.extend([f'%{search}%', f'%{search}%'])
+
+    if filter_year:
+        conditions.append("r.year = ?")
+        params.append(int(filter_year))
+
+    if filter_week:
+        conditions.append("r.week_number = ?")
+        params.append(int(filter_week))
+
+    if filter_user:
+        conditions.append("u.username LIKE ?")
+        params.append(f'%{filter_user}%')
+
+    where_clause = ""
+    if conditions:
+        where_clause = "WHERE " + " AND ".join(conditions)
+
+    # 标签页：我的周报
+    if tab == 'mine' and 'user_id' in session:
+        if where_clause:
+            where_clause += " AND r.user_id = ?"
+        else:
+            where_clause = "WHERE r.user_id = ?"
+        params.append(session['user_id'])
+
+    # 排序方式
+    if tab == 'popular':
+        order_by = "ORDER BY (COUNT(DISTINCT l.id) * 2 + r.view_count) DESC, r.created_at DESC"
+    else:
+        order_by = "ORDER BY r.created_at DESC"
+
+    # 查询周报总数
+    count_sql = f"""
+        SELECT COUNT(DISTINCT r.id)
+        FROM reports r
+        JOIN users u ON r.user_id = u.id
+        LEFT JOIN likes l ON r.id = l.report_id
+        LEFT JOIN comments c ON r.id = c.report_id
+        {where_clause}
+    """
+    total = db.execute(count_sql, params).fetchone()[0]
+
+    # 查询当前页的周报
+    query_sql = f"""
         SELECT
             r.*,
             u.username,
@@ -143,17 +226,38 @@ def index():
         JOIN users u ON r.user_id = u.id
         LEFT JOIN likes l ON r.id = l.report_id
         LEFT JOIN comments c ON r.id = c.report_id
+        {where_clause}
         GROUP BY r.id
-        ORDER BY r.created_at DESC
+        {order_by}
         LIMIT ? OFFSET ?
-    """, (per_page, offset)).fetchall()
+    """
+    reports = db.execute(query_sql, params + [per_page, offset]).fetchall()
 
     total_pages = max(1, (total + per_page - 1) // per_page)
+
+    # 获取所有年份和周数用于筛选下拉
+    all_years = db.execute(
+        "SELECT DISTINCT year FROM reports ORDER BY year DESC"
+    ).fetchall()
+
+    # 保留搜索参数用于分页链接
+    filter_params = {}
+    for key in ['tab', 'search', 'year', 'week', 'user']:
+        val = request.args.get(key, '').strip()
+        if val:
+            filter_params[key] = val
 
     return render_template('index.html',
                            reports=reports,
                            page=page,
-                           total_pages=total_pages)
+                           total_pages=total_pages,
+                           tab=tab,
+                           search=search,
+                           filter_year=filter_year,
+                           filter_week=filter_week,
+                           filter_user=filter_user,
+                           all_years=all_years,
+                           filter_params=filter_params)
 
 
 # ============================================================
@@ -579,6 +683,16 @@ def user_profile(username):
                            user=user,
                            reports=reports,
                            stats=stats)
+
+
+# ============================================================
+# 🎭 错误页面
+# ============================================================
+
+@app.errorhandler(404)
+def page_not_found(e):
+    """404 页面 — 派大星迷路主题"""
+    return render_template('404.html'), 404
 
 
 # ============================================================

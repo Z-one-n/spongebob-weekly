@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}页面未找到 - 404{% endblock %}
+
+{% block content %}
+<div class="error-page">
+    <div class="error-card">
+        <div class="error-icon">⭐</div>
+        <h1 class="error-code">404</h1>
+        <h2>派大星迷路了！</h2>
+        <p>"呃...这里好像不是比奇堡？我是不是走错路了？"</p>
+        <p class="error-hint">— 派大星挠了挠头，困惑地说道</p>
+        <div class="error-actions">
+            <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg">
+                🏠 回比奇堡
+            </a>
+            <a href="javascript:history.back()" class="btn btn-secondary">
+                ↩️ 返回上一页
+            </a>
+        </div>
+    </div>
+    <!-- 海底场景装饰 -->
+    <div class="error-scene">
+        <span class="scene-element scene-rock">🪨</span>
+        <span class="scene-element scene-weed">🌿</span>
+        <span class="scene-element scene-star">⭐</span>
+        <span class="scene-element scene-weed2">🪸</span>
+    </div>
+</div>
+{% endblock %}

@@ -1,20 +1,79 @@
 {% extends "base.html" %}
-{% block title %}首页 - 所有周报{% endblock %}
+{% block title %}首页 - 比奇堡周报{% endblock %}
 
 {% block content %}
 <div class="page-header">
     <h1 class="page-title">
         <span class="title-icon">📰</span>
-        比奇堡周报列表
+        比奇堡周报站
         <span class="title-icon">📰</span>
     </h1>
     <p class="page-subtitle">🌊 看看比奇堡的居民们这周都做了什么~</p>
+</div>
+
+<!-- 🏷️ 标签页导航 — 比奇堡路牌风格 -->
+<div class="tabs-nav">
+    <a href="{{ make_tab_url('latest') }}"
+       class="tab-btn {% if tab == 'latest' %}tab-active{% endif %}">
+        <span class="tab-icon">📰</span> 最新周报
+    </a>
+    <a href="{{ make_tab_url('mine') }}"
+       class="tab-btn {% if tab == 'mine' %}tab-active{% endif %}">
+        <span class="tab-icon">👤</span> 我的周报
+    </a>
+    <a href="{{ make_tab_url('popular') }}"
+       class="tab-btn {% if tab == 'popular' %}tab-active{% endif %}">
+        <span class="tab-icon">🔥</span> 热门周报
+    </a>
+</div>
+
+<!-- 🔍 搜索和筛选栏 -->
+<div class="search-bar">
+    <form method="GET" action="{{ url_for('index') }}" class="search-form">
+        <input type="hidden" name="tab" value="{{ tab }}">
+        <div class="search-row">
+            <div class="search-input-wrapper">
+                <span class="search-icon">🔍</span>
+                <input type="text" name="search" value="{{ search }}"
+                       placeholder="搜索周报标题或内容..." class="search-input">
+            </div>
+            <select name="year" class="filter-select">
+                <option value="">📆 所有年份</option>
+                {% for y in all_years %}
+                <option value="{{ y.year }}" {% if filter_year == y.year|string %}selected{% endif %}>{{ y.year }} 年</option>
+                {% endfor %}
+            </select>
+            <select name="week" class="filter-select">
+                <option value="">📅 所有周数</option>
+                {% for w in range(1, 53) %}
+                <option value="{{ w }}" {% if filter_week == w|string %}selected{% endif %}>第 {{ w }} 周</option>
+                {% endfor %}
+            </select>
+            <input type="text" name="user" value="{{ filter_user }}"
+                   placeholder="👤 搜索用户..." class="filter-input">
+            <button type="submit" class="btn btn-primary btn-sm search-btn">搜索</button>
+            {% if search or filter_year or filter_week or filter_user %}
+            <a href="{{ url_for('index', tab=tab) }}" class="btn btn-sm btn-secondary">✕ 清除</a>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+<!-- 📋 结果统计 -->
+<div class="results-info">
+    {% if search or filter_year or filter_week or filter_user %}
+        <span class="results-count">🔍 找到 {{ reports|length if reports else 0 }} 条结果</span>
+    {% endif %}
 </div>
 
 {% if reports %}
     <div class="report-list">
         {% for report in reports %}
         <article class="report-card">
+            <!-- 🎭 随机角色水印 -->
+            {% set characters = ['🧽', '⭐', '🦀', '🐿️', '🦑', '🐳', '🐌', '🍍', '🫧'] %}
+            <div class="card-watermark">{{ characters|random }}</div>
+
             <div class="report-card-header">
                 <div class="report-author">
                     <span class="author-avatar">{{ report.avatar_emoji }}</span>
@@ -58,7 +117,7 @@
     {% if total_pages > 1 %}
     <div class="pagination">
         {% if page > 1 %}
-            <a href="{{ url_for('index', page=page-1) }}" class="page-btn">← 上一页</a>
+            <a href="{{ make_page_url(page-1) }}" class="page-btn">← 上一页</a>
         {% else %}
             <span class="page-btn page-btn-disabled">← 上一页</span>
         {% endif %}
@@ -66,7 +125,7 @@
         <span class="page-info">第 {{ page }} / {{ total_pages }} 页</span>
 
         {% if page < total_pages %}
-            <a href="{{ url_for('index', page=page+1) }}" class="page-btn">下一页 →</a>
+            <a href="{{ make_page_url(page+1) }}" class="page-btn">下一页 →</a>
         {% else %}
             <span class="page-btn page-btn-disabled">下一页 →</span>
         {% endif %}
@@ -74,18 +133,44 @@
     {% endif %}
 
 {% else %}
+    <!-- 🎭 不同场景不同空状态角色 -->
     <div class="empty-state">
-        <div class="empty-icon">🦀</div>
-        <h2>还没有周报呢！</h2>
-        <p>蟹老板说：「快写周报！不然扣你蟹黄堡！」</p>
-        {% if session.user_id %}
+        {% if tab == 'mine' and not session.user_id %}
+            <!-- 未登录看"我的周报" — 派大星 -->
+            <div class="empty-icon">⭐</div>
+            <h2>你还不是比奇堡居民！</h2>
+            <p>派大星说：「嘿兄弟，先注册才能看自己的周报哦~」</p>
+            <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">
+                🧽 加入比奇堡
+            </a>
+        {% elif tab == 'mine' %}
+            <!-- 已登录但没写过 — 海绵宝宝 -->
+            <div class="empty-icon">🧽</div>
+            <h2>你还没写过周报！</h2>
+            <p>海绵宝宝说：「我准备好了！现在就写第一篇周报吧！」</p>
             <a href="{{ url_for('create_report') }}" class="btn btn-primary btn-lg">
                 ✍️ 写第一篇周报
             </a>
+        {% elif search or filter_year or filter_week or filter_user %}
+            <!-- 搜索无结果 — 章鱼哥 -->
+            <div class="empty-icon">🦑</div>
+            <h2>没有找到匹配的周报</h2>
+            <p>章鱼哥耸耸肩：「根本就没有这种东西~」</p>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">↩️ 回到全部周报</a>
         {% else %}
-            <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">
-                🧽 注册并写第一篇周报
-            </a>
+            <!-- 完全没周报 — 蟹老板 -->
+            <div class="empty-icon">🦀</div>
+            <h2>比奇堡还没有周报！</h2>
+            <p>蟹老板暴怒：「快写周报！不然扣你蟹黄堡！！」</p>
+            {% if session.user_id %}
+                <a href="{{ url_for('create_report') }}" class="btn btn-primary btn-lg">
+                    ✍️ 写第一篇周报
+                </a>
+            {% else %}
+                <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">
+                    🧽 注册并写第一篇周报
+                </a>
+            {% endif %}
         {% endif %}
     </div>
 {% endif %}
